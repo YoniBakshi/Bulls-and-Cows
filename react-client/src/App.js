@@ -1,12 +1,17 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
-function App() {
-  return (
-    <div className="App">
-        <h1>React App</h1>
-    </div>
-  );
+import React from 'react';
+import Game from './components/Game';
+
+class App extends React.Component {
+    render() {
+        return (
+            <div className="container">
+                <Game />
+            </div>
+        );
+    }
 }
 
 export default App;

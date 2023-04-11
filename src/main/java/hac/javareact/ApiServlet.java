@@ -1,56 +1,59 @@
 package hac.javareact;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
-/* You can delete this comment before submission - it's only here to help you get started.
-Your servlet should be available at "/java_react_war/api/highscores"
-assuming you don't modify the application's context path (/java_react_war).
-on the client side, you can send request to the servlet using:
-fetch("/java_react_war/api/highscores")
-*/
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 @WebServlet(name = "ServletApi", value = "/api/highscores")
 public class ApiServlet extends HttpServlet {
-    /**
-     *
-     * @param request
-     * @param response
-     * @throws IOException
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        // your code here
-
-        // note: this is necessary to allow cross-origin requests from the React frontend
-        // response.setHeader("Access-Control-Allow-Origin", "*");
-
-        // remove this line ! it's only for you to browse the template
-        response.getWriter().println("You are not supposed to browse this page. It will be used for API calls.");
-    }
-
-    /**
-     *
-     * @param request
-     * @param response
-     * @throws IOException
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // your code here
-
-        // note: this is necessary to allow cross-origin requests from the React frontend
-        // response.setHeader("Access-Control-Allow-Origin", "*");
-
-    }
+    private ArrayList<HashMap<String, Object>> highScores;
 
     @Override
     public void init() {
+        // Initialize the high scores data structure
+        highScores = new ArrayList<>();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Read the high scores data structure and return it as a JSON object
+        Gson gson = new Gson();
+        String json = gson.toJson(highScores);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(json);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Parse the incoming JSON object
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(request.getReader(), JsonObject.class);
+
+        // Update the high scores data structure
+        String name = jsonObject.get("name").getAsString();
+        int score = jsonObject.get("score").getAsInt();
+        HashMap<String, Object> scoreData = new HashMap<>();
+        scoreData.put("name", name);
+        scoreData.put("score", score);
+        highScores.add(scoreData);
+
+        // Return a success message
+        JsonObject result = new JsonObject();
+        result.addProperty("success", true);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(result.toString());
     }
 
     @Override
     public void destroy() {
+        // Save the high scores data structure to a file or database
     }
 }
