@@ -11,3 +11,132 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+body {
+  background-image: url('https://vmsoft-bg.com/wp-content/uploads/2019/02/Feature-graphic_en.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+
+
+.message-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.error {
+  background-color: rgba(255, 0, 0, 0.7);
+  color: #333;
+}
+
+.success {
+  background-color: rgba(0, 255, 0, 0.7);
+  color: #333;
+}
+
+.score-table {
+  margin-top: 30px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.score-table th, .score-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.score-table th {
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+.score-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.table {
+  border-collapse: collapse;
+  margin: 20px auto;
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+.table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+.table td:first-child {
+  text-align: center;
+}
+
+.table td:nth-child(2) {
+  font-weight: bold;
+}
+
+@media only screen and (max-width: 600px) {
+  .table {
+    font-size: 0.8rem;
+  }
+}
+
+.button-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.button-group > * {
+  margin-right: 10px;
+}
+
+@media (max-width: 600px) {
+  .button-group {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .button-group > * {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  z-index: 999;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}

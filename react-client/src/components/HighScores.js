@@ -1,41 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-function HighScores() {
-    const [scores, setScores] = useState([]);
+function HighScores({ name, score, highScores }) {
+    if (!Array.isArray(highScores)) {
+        return (
+            <div className="message-container error">
+                <h2>High Scores</h2>
+                <p>Sorry, there was an error retrieving the high scores.</p>
+            </div>
+        );
+    }
 
-    useEffect(() => {
-        fetch('/api/highscores')
-            .then((response) => response.json())
-            .then((data) => {
-                setScores(data);
-            })
-            .catch((error) => console.error(error));
-    }, []);
+    const hasScore = highScores.some((item) => item.score === score);
+    const hasName = highScores.some((item) => item.name === name);
 
-    // Sort the scores in descending order based on the score property and get the top 4
-    const topScores = scores.sort((a, b) => b.score - a.score).slice(0, 4);
-
-    return (
-        <div className="my-4">
-            <h2>High scores:</h2>
-            <table className="table">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Score</th>
-                </tr>
-                </thead>
-                <tbody>
-                {topScores.map((score, index) => (
-                    <tr key={index}>
-                        <td>{score.name}</td>
-                        <td>{score.score}</td>
+    if (hasScore && hasName) {
+        return (
+            <div className="message-container success">
+                <h2>Congratulations {name}!</h2>
+                <p>Your score of {score} made it to the top 5!</p>
+                <h3>Top 5 High Scores:</h3>
+                <table className="score-table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Score</th>
                     </tr>
-                ))}
-                </tbody>
-            </table>
-        </div>
-    );
+                    </thead>
+                    <tbody>
+                    {highScores.map((score, index) => (
+                        <tr key={index}>
+                            <td>{score.name}</td>
+                            <td>{score.score}</td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    } else {
+        return (
+            <div className="message-container error">
+                <h2>Game Over!</h2>
+                <p>Sorry {name}, your score of {score} did not make it to the top 5. Better luck next time!</p>
+            </div>
+        );
+    }
 }
 
 export default HighScores;
+
+

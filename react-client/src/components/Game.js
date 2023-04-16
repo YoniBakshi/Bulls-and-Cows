@@ -1,119 +1,129 @@
-import React, { useState, useEffect } from 'react';
-import BullsAndCows from './BullsAndCows';
+import React, { useState,  } from 'react';
+
 import Header from './Header';
+import NewGame from './NewGame';
 import RandomNumber from './RandomNumber';
 import GuessForm from './GuessForm';
 import GuessHistory from './GuessHistory';
 import ScoreForm from './ScoreForm';
 import HighScores from './HighScores';
+import GameInfo from "./GameInfo";
 
 function Game() {
-    const [secretNumber, setSecretNumber] = useState(null);
-    const [guesses, setGuesses] = useState([]);
+    const [secretNumber, setSecretNumber] = useState(Math.floor(Math.random() * 9000 + 1000).toString());
+    const [guess, setGuess] = useState([0, 0, 0, 0]);
+    const [guessHistory, setGuessHistory] = useState([]);
     const [showScoreForm, setShowScoreForm] = useState(false);
+    const [showHighScores, setShowHighScores] = useState(false);
+    const [name, setName] = useState('');
+    const [score, setScore] = useState(0);
     const [highScores, setHighScores] = useState([]);
-    const [gameStarted, setGameStarted] = useState(false); // add new state variable
 
-    useEffect(() => {
-        if (gameStarted) { // only generate secret number when the game has started
-            // generate a random 4-digit number as the secret number
-            let secretNumber = '';
-            while (secretNumber.length < 4) {
-                let newDigit = Math.floor(Math.random() * 10);
-                if (!secretNumber.includes(newDigit.toString())) {
-                    secretNumber += newDigit.toString();
-                }
-            }
-            setSecretNumber(secretNumber);
-        }
-    }, [gameStarted]);
-
-    const handleStartGame = () => {
-        setGameStarted(true);
+    const getHighScores = async () => {
+        const response = await fetch('/api/highscores');
+        const data = await response.json();
+        setHighScores(data);
     };
 
-    const handleGuess = (guess) => {
-        let bulls = 0;
-        let cows = 0;
-        console.log('guess', guess);
-        // check how many bulls and cows the guess has
-        for (let i = 0; i < guess.length; i++) {
-            console.log('guess[i]', guess[i] + ' secretNumber[i]', secretNumber[i]);
-            if (guess[i] === secretNumber[i]) {
-                bulls++;
-            } else {
-                cows++;
-                console.log('cows', cows);
-            }
-        }
-        console.log(`Bulls: ${bulls}, Cows: ${cows}`);
-        // add the guess to the list of guesses
-        let newGuesses = [...guesses, { guess, bulls, cows }];
-        setGuesses(newGuesses);
+    const handleSaveScore = async (name) => {
+        await postScore(name, guessHistory.length);
+        await getHighScores();
     };
-    const calculateScore = () => {
-        const maxScore = 1000;
-        const constantFactor = 10;
 
-        let score = (maxScore - guesses.length) * constantFactor;
-        score = Math.max(score, 0); // Ensure that the score is non-negative
-
-        return score;
-    }
-
-
-
-    const handleScoreSubmit = (name) => {
-        // save the score to the server and fetch the updated high scores
-        fetch('/api/highscores', {
+    const postScore = async (name, score) => {
+        const response = await fetch('/api/highscores', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name, score: calculateScore(guesses) })
-        })
-            .then(() => fetchHighScores())
-            .catch(err => console.error(err));
+            body: JSON.stringify({
+                name,
+                score,
+            }),
+        });
+        const data = await response.json();
+        setShowHighScores(true);
+        setName(name);
+        setScore(score);
+        setGuessHistory([]);
     };
 
-    const toggleScoreForm = () => {
-        setShowScoreForm(!showScoreForm);
+
+    const handleNewGameClick = () => {
+        setShowScoreForm(false);
+        setName('');
+        setScore(0);
+        setShowHighScores(false);
+        setSecretNumber(Math.floor(Math.random() * 9000 + 1000).toString());
+        setGuess([0, 0, 0, 0]);
+        setGuessHistory([]);
     };
 
-    const fetchHighScores = () => {
-        // fetch the top 5 high scores from the server
-        fetch('/api/highscores')
-            .then(res => res.json())
-            .then(data => setHighScores(data))
-            .catch(err => console.error(err));
+
+    const handleGuessSubmit = (guess) => {
+        let bulls = 0;
+        let cows = 0;
+        for (let i = 0; i < guess.length; i++)
+            if (guess[i] === secretNumber.toString()[i])
+                bulls++;
+            else
+                cows++;
+
+        setGuess(guess);
+        setGuessHistory((prevGuesses) => [...prevGuesses, { guess, bulls, cows }]);
+
+        if (bulls === 4)
+            setShowScoreForm(true);
     };
 
-return (
-    <div>
-        <Header />
-        {gameStarted ? ( // only show game elements when the game has started
-            <>
-                <BullsAndCows>
-                    <RandomNumber number={secretNumber} />
-                    <GuessForm onGuess={handleGuess} />
-                    <GuessHistory history={guesses} />
-                </BullsAndCows>
-                {showScoreForm ?
-                    <ScoreForm onSubmit={handleScoreSubmit} onCancel={toggleScoreForm} /> :
-                    <button
-                        className="btn btn-primary mb-4"
-                        onClick={toggleScoreForm}
-                        disabled={guesses.filter(guess => guess.bulls >= 4).length < 1}
-                    >
-                        {guesses.filter(guess => guess.bulls >= 4).length < 1 ? 'Enter at least 4 bulls to save score' : 'Save score'}
-                    </button>
-                }
-                <HighScores scores={highScores} onRefresh={fetchHighScores} />
-            </>
-        ) : (
-            <button className="btn btn-primary mb-4" onClick={handleStartGame}>Start game</button>
-        )}
-    </div>
-);
+
+
+    return (
+        <div>
+            <Header />
+            <div className="container">
+                {showHighScores ? (
+                    <>
+                        <NewGame text="New Game" onClick={handleNewGameClick} />
+                        <HighScores name={name} score={score} highScores={highScores} />
+                    </>
+                ) : (
+                    <>
+                        <div className="button-group">
+                            <NewGame text="New Game" onClick={handleNewGameClick} />
+                            <GameInfo />
+                        </div>
+                        <RandomNumber number={secretNumber} />
+                        <GuessForm onGuess={handleGuessSubmit} />
+                        <GuessHistory guessHistory={guessHistory} />
+                        {showScoreForm && <ScoreForm onScoreSubmit={handleSaveScore} />}
+                    </>
+
+                )}
+            </div>
+        </div>
+    );
 }
+
 export default Game;
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+new game button -all the time will be showen, if you press on it it will get a new random number, delete the guess history, do not show the high score table.
+Random Number,
+Guess Form,
+-guess history,
+button that will be: 'Enter at least 4 bulls to save score' or 'Save score' with the same conditions,
+score form,
+high score - will appear if the score is on of the 5 top if it is not: there will be a nice fame over message
+ */
