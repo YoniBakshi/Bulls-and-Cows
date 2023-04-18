@@ -33,27 +33,22 @@ const GuessForm = ({ onGuess }) => {
         e.target.select();
     }
 
-    const handleBackspace = (e, index) => {
-        if (e.keyCode === 8) {
+    const handleKeyDown = (e, index) => {
+   if (e.keyCode === 8) {
             e.preventDefault();
 
-            // Update the current input value with an empty string
-            setGuess((prev) => {
-                const newPin = [...prev];
-                newPin[index] = null;
-                return newPin;
-            });
+            const newGuess = [...guess];
+            newGuess.splice(index, 1, null);
 
-            // Move the cursor back to the previous input field
+            setGuess(newGuess);
+
             const prevIndex = index - 1;
             if (prevIndex >= 0) {
-                //const prevInput = document.getElementById(`pin-input-${prevIndex}`);
-                const prevInput = inputsRef.current[prevIndex];
-                prevInput.focus();
-                prevInput.select();
+                inputsRef.current[prevIndex].focus();
             }
         }
     }
+
 
     const handleChange = (e, index) => {
         const value = e.target.value.toString()[e.target.value.length - 1];
@@ -69,19 +64,6 @@ const GuessForm = ({ onGuess }) => {
                 inputsRef.current[nextIndex].focus();
             }
             e.target.style.opacity =1;
-        } else if (e.keyCode === 8) {
-            e.preventDefault();
-
-            const newGuess = [...guess];
-            newGuess.splice(index, 1, null);
-
-            setGuess(newGuess);
-
-            const prevIndex = index - 1;
-            if (prevIndex >= 0) {
-                inputsRef.current[prevIndex].focus();
-            }
-            e.target.style.opacity = 0;
         } else {
             setError(true);
             setErrorMessage("Only numbers are allowed");
@@ -92,7 +74,7 @@ const GuessForm = ({ onGuess }) => {
         <div className="pin-container">
             <Form onSubmit={handleSubmit}>
 
-                    <div className={"alert alert-danger " + (error ? "show" : "hide" )} role="alert">
+                    <div className={"alert alert2 alert-danger " + (error ? "show" : "hide" )} role="alert">
                         {errorMessage}
                     </div>
 
@@ -105,8 +87,8 @@ const GuessForm = ({ onGuess }) => {
                                 ref={(el) => (inputsRef.current[index] = el)}
                                 value={guess[index] || ""}
                                 onChange={(e) => handleChange(e, index)}
-                                onKeyDown={(e) => handleBackspace(e, index)}
                                 onFocus={handleFocus}
+                                onKeyDown={(e) => handleKeyDown(e, index)}
                                 className="pin-input-field"
 
                             />

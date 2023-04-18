@@ -90,7 +90,8 @@ public class ApiServlet extends HttpServlet {
     private  ArrayList<HashMap<String, Object>> getHighScores() {
         // Read the scores from the file into a list of HashMap<String, Object>
         ArrayList<HashMap<String, Object>> scoresList = new ArrayList<>();
-        synchronized(ApiServlet.class) {
+        synchronized
+         (ApiServlet.class) {
             try (Scanner scanner = new Scanner(new File(SCORES_FILE_NAME))) {
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();

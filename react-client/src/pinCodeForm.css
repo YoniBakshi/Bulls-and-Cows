@@ -47,7 +47,7 @@
     background-color: transparent;
 }
 
-.alert {
+.alert2 {
     position: absolute;
     top: -40px;
     left: 50%;
@@ -69,12 +69,12 @@
     z-index: 10;
 }
 
-.gameInfo.show, .alert.show {
+.gameInfo.show, .alert2.show {
     opacity: 1;
     visibility: visible;
 }
 
-.gameInfo.hide, .alert.hide {
+.gameInfo.hide, .alert2.hide {
     opacity: 0;
     pointer-events: none;
     transition: 0.5s ease-in-out;
