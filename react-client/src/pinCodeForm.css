@@ -1,0 +1,51 @@
+.pin-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.pin-input-field {
+    font-family: 'Courier', sans-serif;
+    border: none;
+    border-bottom: 2px solid black;
+    border-radius: 0;
+    width: 50px;
+    font-size: 40px;
+    text-align: center;
+    margin-right: 10px;
+    padding: 5px 10px;
+    outline: none;
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.pin-input-field::-webkit-outer-spin-button,
+.pin-input-field::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.pin-input-field[type=number] {
+    -moz-appearance: textfield
+}
+
+.pin-input-field:focus {
+    border-bottom: 2px solid #00b0ff;
+    background-color: rgba(255, 255, 255, 0);
+}
+
+input::selection {
+    background-color: transparent;
+}
+
+.alert {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+}

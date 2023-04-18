@@ -30,25 +30,15 @@ public class ApiServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // Read the scores from the file into a list of HashMap<String, Object>
-        List<HashMap<String, Object>> scoresList = new ArrayList<>();
-        try (Scanner scanner = new Scanner(new File(SCORES_FILE_NAME))) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                HashMap<String, Object> score = new Gson().fromJson(line, HashMap.class);
-                scoresList.add(score);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        ArrayList<HashMap<String, Object>> scoresList = getHighScores();
 
         // Sort the scores by score in descending order
-        scoresList.sort((o1, o2) -> Double.compare((Double) o2.get("score"), (Double) o1.get("score")));
+        scoresList.sort((o1, o2) -> Double.compare((Double) o1.get("score"), (Double) o2.get("score")));
 
         // Add only the lowest 5 scores to a new ArrayList
-        List<HashMap<String, Object>> lowestScores = new ArrayList<>();
-        for (int i = 0; i < Math.min(5, scoresList.size()); i++) {
+        ArrayList<HashMap<String, Object>> lowestScores = new ArrayList<>();
+        for (int i = 0; i < Math.min(5, scoresList.size()); i++)
             lowestScores.add(scoresList.get(i));
-        }
 
         // Convert the lowest 5 scores to a JSON object and return it
         Gson gson = new Gson();
@@ -69,49 +59,18 @@ public class ApiServlet extends HttpServlet {
         // Update the scores data structure
         String name = jsonObject.get("name").getAsString();
         int score = jsonObject.get("score").getAsInt();
-        boolean updated = false;
 
-        List<HashMap<String, Object>> scoresList = new ArrayList<>();
-        try (Scanner scanner = new Scanner(new File(SCORES_FILE_NAME))) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                HashMap<String, Object> scoreData = gson.fromJson(line, HashMap.class);
-                if (scoreData.get("name").equals(name)) {
-                    if ((Integer) scoreData.get("score") > score) {
-                        scoreData.put("score", score);
-                        updated = true;
-                    }
-                }
-                scoresList.add(scoreData);
-            }
-        } catch (FileNotFoundException e) {
-            // If the file is not found, just log a warning and continue
-            System.out.println("Warning: scores file not found");
-        }
-
-        if (!updated) {
+       ArrayList<HashMap<String, Object>> scoresList = getHighScores();
+       
+        if(!checkForUpdate(getHighScores(), name, score)){
             HashMap<String, Object> scoreData = new HashMap<>();
             scoreData.put("name", name);
             scoreData.put("score", score);
             scoresList.add(scoreData);
         }
 
-        // Sort the scores by score in descending order
-
-        //scoresList.sort((o1, o2) -> Integer.compare((int) o2.get("score"), (int) o1.get("score")));
-
         // Write the updated scores back to the file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(SCORES_FILE_NAME))) {
-            for (HashMap<String, Object> scoreData : scoresList) {
-                String json = gson.toJson(scoreData);
-                writer.write(json);
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            // If there is an IO error while writing the file, log an error message
-            System.err.println("Error writing scores file: " + e.getMessage());
-            e.printStackTrace();
-        }
+        writeToMemoryFile(scoresList);
 
         // Return a success message
         JsonObject result = new JsonObject();
@@ -126,6 +85,47 @@ public class ApiServlet extends HttpServlet {
     public void destroy() {
         // Save the high scores data structure to a file
 
+    }
+
+    private ArrayList<HashMap<String, Object>> getHighScores() {
+        // Read the scores from the file into a list of HashMap<String, Object>
+        ArrayList<HashMap<String, Object>> scoresList = new ArrayList<>();
+        try (Scanner scanner = new Scanner(new File(SCORES_FILE_NAME))) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                HashMap<String, Object> score = new Gson().fromJson(line, HashMap.class);
+                scoresList.add(score);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return scoresList;
+    }
+
+    private boolean checkForUpdate(ArrayList<HashMap<String, Object>> scoresList, String name, int score){
+        for(HashMap<String, Object> scoreData : scoresList) {
+            if (scoreData.get("name").equals(name)) {
+                if ((Double) scoreData.get("score") > score)
+                    scoreData.put("score", score);
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    private void writeToMemoryFile(ArrayList<HashMap<String, Object>> scoresList) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(SCORES_FILE_NAME))) {
+            for (HashMap<String, Object> scoreData : scoresList) {
+                String json = new Gson().toJson(scoreData);
+                writer.write(json);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            // If there is an IO error while writing the file, log an error message
+            System.err.println("Error writing scores file: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
 

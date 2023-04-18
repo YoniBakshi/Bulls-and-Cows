@@ -13,12 +13,22 @@ function HighScores({ name, score, highScores }) {
     const hasScore = highScores.some((item) => item.score === score);
     const hasName = highScores.some((item) => item.name === name);
 
-    if (hasScore && hasName) {
-        return (
+    return (
+        <>
+        {hasScore  ? (
             <div className="message-container success">
                 <h2>Congratulations {name}!</h2>
-                <p>Your score of {score} made it to the top 5!</p>
-                <h3>Top 5 High Scores:</h3>
+                {hasName ? (
+                <p>Your score of <span className="fw-bold">{score}</span> made it to the top 5!</p> ) :
+                (<p>Your score of <span className="fw-bold">{score}</span> made it to the top 5! but there more then 5 players with that score</p>)}
+            </div>
+        ) : (
+            <div className="message-container error">
+                <h2>Game Over!</h2>
+                <p>Sorry {name}, your score of {score} did not make it to the top 5. Better luck next time!</p>
+            </div>
+        )}
+            <div className="message-container alert alert-info">
                 <table className="score-table">
                     <thead>
                     <tr>
@@ -36,15 +46,8 @@ function HighScores({ name, score, highScores }) {
                     </tbody>
                 </table>
             </div>
-        );
-    } else {
-        return (
-            <div className="message-container error">
-                <h2>Game Over!</h2>
-                <p>Sorry {name}, your score of {score} did not make it to the top 5. Better luck next time!</p>
-            </div>
-        );
-    }
+        </>
+    );
 }
 
 export default HighScores;
