@@ -1,4 +1,4 @@
-import React, { useState,  } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Header from './Header';
 import NewGame from './NewGame';
@@ -8,9 +8,11 @@ import GuessHistory from './GuessHistory';
 import ScoreForm from './ScoreForm';
 import HighScores from './HighScores';
 import GameInfo from "./GameInfo";
+import ExceptionComponent from "./ExceptionComponent";
 
 function Game() {
-    const [secretNumber, setSecretNumber] = useState(Math.floor(Math.random() * 9000 + 1000).toString());
+    const [secretNumber, setSecretNumber] = useState(null);
+    const [gameStarted, setGameStarted] = useState(true);
     const [guess, setGuess] = useState([0, 0, 0, 0]);
     const [guessHistory, setGuessHistory] = useState([]);
     const [showScoreForm, setShowScoreForm] = useState(false);
@@ -18,34 +20,68 @@ function Game() {
     const [name, setName] = useState('');
     const [score, setScore] = useState(0);
     const [highScores, setHighScores] = useState([]);
+    const [errorMessage, setErrorMessage] = useState(null);
+
+    useEffect(() => {
+        if (gameStarted) {
+            let secretNumber = '';
+            while (secretNumber.length < 4) {
+                let newDigit = Math.floor(Math.random() * 10);
+                if (!secretNumber.includes(newDigit.toString())) {
+                    secretNumber += newDigit.toString();
+                }
+            }
+            setSecretNumber(secretNumber);
+            setGameStarted(false);
+        }
+    }, [gameStarted]);
+
 
     const getHighScores = async () => {
         const response = await fetch('/api/highscores');
+
+        if(!response.ok)
+            throw new Error("Error: " + response.status + ": " + response.statusText );
         const data = await response.json();
         setHighScores(data);
     };
 
     const handleSaveScore = async (name) => {
-        await postScore(name, guessHistory.length);
-        await getHighScores();
+        try {
+            await postScore(name, guessHistory.length);
+            await getHighScores();
+        } catch (error) {
+            setErrorMessage(error.message);
+        }
     };
 
     const postScore = async (name, score) => {
-        const response = await fetch('/api/highscores', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name,
-                score,
-            }),
-        });
-        const data = await response.json();
-        setShowHighScores(true);
-        setName(name);
-        setScore(score);
-        setGuessHistory([]);
+        try {
+            const response = await fetch("/api/highscores", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name,
+                    score,
+                }),
+            });
+            if(!response.ok)
+                throw new Error("Error: " + response.status + ": " + response.statusText );
+
+            setShowHighScores(true);
+            setName(name);
+            setScore(score);
+            setGuessHistory([]);
+        } catch (error) {
+            setErrorMessage(error.message);
+        }
+    };
+
+
+    const handleCloseException = () => {
+        setErrorMessage(null);
     };
 
 
@@ -54,26 +90,22 @@ function Game() {
         setName('');
         setScore(0);
         setShowHighScores(false);
-        setSecretNumber(Math.floor(Math.random() * 9000 + 1000).toString());
+        //setSecretNumber();
+        setGameStarted(true);
         setGuess([0, 0, 0, 0]);
         setGuessHistory([]);
     };
 
 
     const handleGuessSubmit = (guess) => {
-        let bulls = 0;
-        let cows = 0;
-        for (let i = 0; i < guess.length; i++)
-            if (guess[i] === secretNumber.toString()[i])
-                bulls++;
-            else
-                cows++;
+        const bulls = guess.split('').filter((digit, index) => digit === secretNumber[index]).length;
+        const cows = guess.split('').filter((digit) => secretNumber.includes(digit)).length - bulls;
 
         setGuess(guess);
         setGuessHistory((prevGuesses) => [...prevGuesses, { guess, bulls, cows }]);
-
-        if (bulls === 4)
+        if (bulls === 4) {
             setShowScoreForm(true);
+        }
     };
 
 
@@ -82,6 +114,12 @@ function Game() {
         <div>
             <Header />
             <div className="container">
+                {errorMessage && (
+                    <ExceptionComponent
+                        message={errorMessage}
+                        handleCloseException={handleCloseException}
+                    />
+                )}
                 {showHighScores ? (
                     <>
                         <NewGame text="New Game" onClick={handleNewGameClick} />
@@ -98,11 +136,11 @@ function Game() {
                         <GuessHistory guessHistory={guessHistory} />
                         {showScoreForm && <ScoreForm onScoreSubmit={handleSaveScore} />}
                     </>
-
                 )}
             </div>
         </div>
     );
+
 }
 
 export default Game;

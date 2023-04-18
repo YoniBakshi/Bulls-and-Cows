@@ -8,7 +8,7 @@ function GameInfo() {
     };
 
     return (
-        <div>
+        <>
             <button className='btn btn-primary mb-4' onClick={togglePopup}>How to Play</button>
             {showPopup && (
                 <div className="popup">
@@ -19,7 +19,7 @@ function GameInfo() {
                     <button onClick={togglePopup}>Close</button>
                 </div>
             )}
-        </div>
+        </>
     );
 }
 
