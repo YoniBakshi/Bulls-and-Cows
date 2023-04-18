@@ -61,7 +61,7 @@ public class ApiServlet extends HttpServlet {
         int score = jsonObject.get("score").getAsInt();
 
        ArrayList<HashMap<String, Object>> scoresList = getHighScores();
-       
+
         if(!checkForUpdate(getHighScores(), name, score)){
             HashMap<String, Object> scoreData = new HashMap<>();
             scoreData.put("name", name);
@@ -87,17 +87,19 @@ public class ApiServlet extends HttpServlet {
 
     }
 
-    private ArrayList<HashMap<String, Object>> getHighScores() {
+    private  ArrayList<HashMap<String, Object>> getHighScores() {
         // Read the scores from the file into a list of HashMap<String, Object>
         ArrayList<HashMap<String, Object>> scoresList = new ArrayList<>();
-        try (Scanner scanner = new Scanner(new File(SCORES_FILE_NAME))) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                HashMap<String, Object> score = new Gson().fromJson(line, HashMap.class);
-                scoresList.add(score);
+        synchronized(ApiServlet.class) {
+            try (Scanner scanner = new Scanner(new File(SCORES_FILE_NAME))) {
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    HashMap<String, Object> score = new Gson().fromJson(line, HashMap.class);
+                    scoresList.add(score);
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
         return scoresList;
     }
@@ -115,16 +117,18 @@ public class ApiServlet extends HttpServlet {
 
 
     private void writeToMemoryFile(ArrayList<HashMap<String, Object>> scoresList) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(SCORES_FILE_NAME))) {
-            for (HashMap<String, Object> scoreData : scoresList) {
-                String json = new Gson().toJson(scoreData);
-                writer.write(json);
-                writer.newLine();
+        synchronized(ApiServlet.class) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(SCORES_FILE_NAME))) {
+                for (HashMap<String, Object> scoreData : scoresList) {
+                    String json = new Gson().toJson(scoreData);
+                    writer.write(json);
+                    writer.newLine();
+                }
+            } catch (IOException e) {
+                // If there is an IO error while writing the file, log an error message
+                System.err.println("Error writing scores file: " + e.getMessage());
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            // If there is an IO error while writing the file, log an error message
-            System.err.println("Error writing scores file: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }
