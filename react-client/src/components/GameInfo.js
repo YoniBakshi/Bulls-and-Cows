@@ -1,13 +1,26 @@
 import { useState } from 'react';
 import "../pinCodeForm.css"
 
+/**
+ * This component is used to display the game info popup
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function GameInfo() {
-    const [showPopup, setShowPopup] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);//this is the state variable
 
+    /**
+     * This function is used to toggle the popup
+     * @returns {void}
+     */
     const togglePopup = () => {
         setShowPopup(!showPopup);
     };
 
+    /**
+     * This function is used to display the game info popup
+     * @returns {JSX.Element}
+     */
     return (
         <>
             <button className='btn btn-primary mb-4' onClick={togglePopup}>How to Play</button>

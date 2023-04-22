@@ -1,3 +1,9 @@
+/**
+ *
+ * @param guessHistory
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function GuessHistory({ guessHistory }) {
     return (
         <table className="table">

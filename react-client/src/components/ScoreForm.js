@@ -2,10 +2,20 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
+/**
+ * ScoreForm component is used to display a form to submit the score
+ * @param onScoreSubmit
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function ScoreForm({ onScoreSubmit }) {
-    const [showForm, setShowForm] = useState(false);
-    const [name, setName] = useState('');
+    const [showForm, setShowForm] = useState(false);//this is the state of the form
+    const [name, setName] = useState('');//this is the name
 
+    /**
+     * This function is used to handle the submit
+     * @param e
+     */
     const handleSubmit = (e) => {
         e.preventDefault();
         onScoreSubmit(name);
@@ -13,6 +23,9 @@ function ScoreForm({ onScoreSubmit }) {
         setShowForm(false);
     };
 
+    /**
+     * This function is used to handle the button click
+     */
     const handleButtonClick = () => {
         setShowForm(true);
     };
@@ -25,6 +38,10 @@ function ScoreForm({ onScoreSubmit }) {
         );
     }
 
+    /**
+     * This function is used to return the form
+     * @returns {JSX.Element}
+     */
     return (
         <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">

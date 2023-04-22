@@ -10,18 +10,24 @@ import HighScores from './HighScores';
 import GameInfo from "./GameInfo";
 import ExceptionComponent from "./ExceptionComponent";
 
+/**
+ * @description This component is the main game component
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function Game() {
-    const [secretNumber, setSecretNumber] = useState(null);
-    const [gameStarted, setGameStarted] = useState(true);
-    const [guess, setGuess] = useState([0, 0, 0, 0]);
-    const [guessHistory, setGuessHistory] = useState([]);
-    const [showScoreForm, setShowScoreForm] = useState(false);
-    const [showHighScores, setShowHighScores] = useState(false);
-    const [name, setName] = useState('');
-    const [score, setScore] = useState(0);
-    const [highScores, setHighScores] = useState([]);
-    const [errorMessage, setErrorMessage] = useState(null);
+    const [secretNumber, setSecretNumber] = useState(null); //this is the secret number
+    const [gameStarted, setGameStarted] = useState(true);//this is the state of the game
+    const [guess, setGuess] = useState([0, 0, 0, 0]);//this is the guess
+    const [guessHistory, setGuessHistory] = useState([]);//this is the guess history
+    const [showScoreForm, setShowScoreForm] = useState(false);//this is the state of the score form
+    const [showHighScores, setShowHighScores] = useState(false);//this is the state of the high scores
+    const [name, setName] = useState('');//this is the name of the player
+    const [score, setScore] = useState(0);//this is the score of the player
+    const [highScores, setHighScores] = useState([]);//this is the high scores
+    const [errorMessage, setErrorMessage] = useState(null);//this is the error message
 
+    /** This function is used to start a new game */
     useEffect(() => {
         if (gameStarted) {
             let secretNumber = '';
@@ -36,7 +42,7 @@ function Game() {
         }
     }, [gameStarted]);
 
-
+    /** This function is used to handle the guess */
     const getHighScores = async () => {
         const response = await fetch('/api/highscores');
 
@@ -45,7 +51,11 @@ function Game() {
         const data = await response.json();
         setHighScores(data);
     };
-
+    /** This function is used to handle the guess and the guess history
+     *
+     * @param name
+     * @returns {Promise<void>}
+     */
     const handleSaveScore = async (name) => {
         try {
             await postScore(name, guessHistory.length);
@@ -54,7 +64,12 @@ function Game() {
             setErrorMessage(error.message);
         }
     };
-
+    /** This function is used to post the score to the database
+     *
+     * @param name
+     * @param score
+     * @returns {Promise<void>}
+     */
     const postScore = async (name, score) => {
         try {
             const response = await fetch("/api/highscores", {
@@ -69,7 +84,7 @@ function Game() {
             });
             if(!response.ok)
                 throw new Error("Error: " + response.status + ": " + response.statusText );
-
+            //set all the states to the default values
             setShowHighScores(true);
             setName(name);
             setScore(score);
@@ -79,12 +94,12 @@ function Game() {
         }
     };
 
-
+    /** This function is used to close the exception message */
     const handleCloseException = () => {
         setErrorMessage(null);
     };
 
-
+    /** This function is used to handle the new game click */
     const handleNewGameClick = () => {
         setShowScoreForm(false);
         setName('');
@@ -96,7 +111,10 @@ function Game() {
         setGuessHistory([]);
     };
 
-
+    /** This function is used to handle the guess submit
+     *
+     * @param guess
+     */
     const handleGuessSubmit = (guess) => {
         const bulls = guess.split('').filter((digit, index) => digit === secretNumber[index]).length;
         const cows = guess.split('').filter((digit) => secretNumber.includes(digit)).length - bulls;
@@ -109,7 +127,7 @@ function Game() {
     };
 
 
-
+    /** This function is used to render the game */
     return (
         <div>
             <Header />

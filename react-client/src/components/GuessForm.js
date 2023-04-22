@@ -2,13 +2,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Form } from "react-bootstrap";
 import  "../pinCodeForm.css"
 
+/**
+ * GuessForm component
+ * @param onGuess
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const GuessForm = ({ onGuess }) => {
-    const [guess, setGuess] = useState([null, null, null, null]);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [error, setError] = useState(false);
-    const inputsRef = useRef([]);
-    const buttonRef = useRef(null);
+    const [guess, setGuess] = useState([null, null, null, null]); // this is the guess
+    const [errorMessage, setErrorMessage] = useState("");//this is the error message
+    const [error, setError] = useState(false);//this is the error state
+    const inputsRef = useRef([]);//this is the reference to the input
+    const buttonRef = useRef(null);//this is the reference to the button
 
+    /**
+     * This function is used to handle the guess
+     * @param e
+     */
     useEffect(() => {
         // Check if any of the numbers are the same
         const filteredGuess = guess.filter((digit) => digit !== null);
@@ -23,16 +33,29 @@ const GuessForm = ({ onGuess }) => {
 
     }, [guess]);
 
+    /**
+     * This function is used to handle the submit
+     * @param event
+     */
     const handleSubmit = (event) => {
         event.preventDefault();
         onGuess(guess.join(''));
         setGuess([null, null, null, null]);
     };
 
+    /**
+     * This function is used to handle the focus
+     * @param e
+     */
     const handleFocus = (e) => {
         e.target.select();
     }
 
+    /**
+     * This function is used to handle the key down
+     * @param e
+     * @param index
+     */
     const handleKeyDown = (e, index) => {
    if (e.keyCode === 8) {
             e.preventDefault();
@@ -49,7 +72,11 @@ const GuessForm = ({ onGuess }) => {
         }
     }
 
-
+    /**
+     * This function is used to handle the change
+     * @param e
+     * @param index
+     */
     const handleChange = (e, index) => {
         const value = e.target.value.toString()[e.target.value.length - 1];
 
@@ -69,7 +96,10 @@ const GuessForm = ({ onGuess }) => {
             setErrorMessage("Only numbers are allowed");
         }
     };
-
+    /**
+     * This function is used to render the component
+     * @returns {JSX.Element}
+     */
     return (
         <div className="pin-container">
             <Form onSubmit={handleSubmit}>

@@ -1,6 +1,15 @@
 import React from 'react';
 
+/**
+ * @description This component is used to display the high scores
+ * @param name
+ * @param score
+ * @param highScores
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function HighScores({ name, score, highScores }) {
+    // If highScores is not an array, then there was an error retrieving the high scores.
     if (!Array.isArray(highScores)) {
         return (
             <div className="message-container error">
@@ -9,10 +18,14 @@ function HighScores({ name, score, highScores }) {
             </div>
         );
     }
-
+    // If highScores is an empty array, then there are no high scores.
     const hasScore = highScores.some((item) => item.score === score);
     const hasName = highScores.some((item) => item.name === name);
 
+    /**
+     * @description This function is used to display the high scores
+     * @returns {JSX.Element}
+     */
     return (
         <>
         {hasScore  ? (

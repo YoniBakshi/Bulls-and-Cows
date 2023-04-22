@@ -9,10 +9,23 @@ import javax.servlet.annotation.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+/**
+ * This servlet handles the API requests for the high scores.
+ * It reads and writes the high scores to a file.
+ * It also sorts the high scores by score in descending order.
+ * It returns the lowest 5 scores in the response.
+ * It also updates the high scores if a new score is higher than the old score.
+ */
 @WebServlet(name = "ServletApi", value = "/api/highscores")
 public class ApiServlet extends HttpServlet {
     private static final String SCORES_FILE_NAME = "scores.dat";
+
+    /**
+     * This method is called when the servlet is first initialized.
+     * It loads the high scores from the file into the high scores data structure.
+     */
     @Override
+
     public void init() {
         // Initialize the high scores data structure by loading it from a file
         try(FileInputStream fileIn = new FileInputStream(SCORES_FILE_NAME)) {
@@ -27,6 +40,10 @@ public class ApiServlet extends HttpServlet {
         }
     }
 
+    /**
+     * This method is called when the servlet receives a GET request.
+     * It returns the lowest 5 scores in the response.
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // Read the scores from the file into a list of HashMap<String, Object>
@@ -49,7 +66,10 @@ public class ApiServlet extends HttpServlet {
     }
 
 
-
+    /**
+     * This method is called when the servlet receives a POST request.
+     * It updates the high scores if a new score is higher than the old score.
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // Parse the incoming JSON object
@@ -87,6 +107,10 @@ public class ApiServlet extends HttpServlet {
 
     }
 
+    /**
+     * This method reads the high scores from the file into a list of HashMap<String, Object>.
+     * @return the list of high scores
+     */
     private  ArrayList<HashMap<String, Object>> getHighScores() {
         // Read the scores from the file into a list of HashMap<String, Object>
         ArrayList<HashMap<String, Object>> scoresList = new ArrayList<>();
@@ -105,6 +129,15 @@ public class ApiServlet extends HttpServlet {
         return scoresList;
     }
 
+    /**
+     * This method checks if the name is already in the list of scores.
+     * If it is, it checks if the score is higher than the old score.
+     * If it is, it updates the score.
+     * @param scoresList the list of scores
+     * @param name the name to check
+     * @param score the score to check
+     * @return true if the name was found in the list of scores, false otherwise
+     */
     private boolean checkForUpdate(ArrayList<HashMap<String, Object>> scoresList, String name, int score){
         for(HashMap<String, Object> scoreData : scoresList) {
             if (scoreData.get("name").equals(name)) {
@@ -116,7 +149,10 @@ public class ApiServlet extends HttpServlet {
         return false;
     }
 
-
+    /**
+     * This method writes the high scores to the file.
+     * @param scoresList the list of scores to write
+     */
     private void writeToMemoryFile(ArrayList<HashMap<String, Object>> scoresList) {
         synchronized(ApiServlet.class) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(SCORES_FILE_NAME))) {
