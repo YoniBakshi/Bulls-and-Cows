@@ -19,7 +19,7 @@ const GuessForm = ({ onGuess }) => {
         }else
              setError(false);
 
-        buttonRef.current.disabled = !!(filteredGuess.length !== 4 || errorMessage);
+        buttonRef.current.disabled = (filteredGuess.length !== 4 || error);
 
     }, [guess]);
 
@@ -58,7 +58,7 @@ const GuessForm = ({ onGuess }) => {
             newGuess.splice(index, 1, value);
 
             setGuess(newGuess);
-
+            setError(false)
             const nextIndex = index + 1;
             if (nextIndex < guess.length) {
                 inputsRef.current[nextIndex].focus();
