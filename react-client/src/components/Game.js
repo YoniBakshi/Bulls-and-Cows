@@ -144,24 +144,3 @@ function Game() {
 }
 
 export default Game;
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-new game button -all the time will be showen, if you press on it it will get a new random number, delete the guess history, do not show the high score table.
-Random Number,
-Guess Form,
--guess history,
-button that will be: 'Enter at least 4 bulls to save score' or 'Save score' with the same conditions,
-score form,
-high score - will appear if the score is on of the 5 top if it is not: there will be a nice fame over message
- */

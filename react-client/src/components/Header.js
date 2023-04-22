@@ -1,5 +1,4 @@
 import React from 'react';
-import BullsAndCows from "./BullsAndCows";
 
 const Header = () => {
     return (

@@ -1,11 +1,24 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-8d59dc4de5201274e310e4c54b9627a8934c3b88527886e3b421487c677d23eb.svg)](https://classroom.github.com/a/YDg-_nm7)
 ## Authors
-* Name:  Email:
-* Name:  Email:
+* Dvir Avraham:  dviravr@edu.hac.ac.il:
+* Yoni Bakshi:  yehonatanba@edu.hac.ac.il:
 
 ## Explanations
 
-(Explain here your project)
+The project is a guessing game web application where the user tries to guess a randomly generated number.
+The user can submit their guess and receive feedback if the guess is too high or too low.
+The user can also choose to start a new game at any time.
+
+In addition to the game, the application also has a high score feature where users can enter their name 
+and save their score to a server. The top 5 high scores are displayed to the user.
+
+The project is implemented using React for the front-end and Java Servlets for the back-end. 
+The front-end code is divided into several components, including a header, a form for entering guesses, 
+a display of the random number, a display of the guess history,
+and a form for entering a name to save a high score.
+
+The back-end code includes two Servlets, one for handling GET requests to retrieve the high scores and another
+for handling POST requests to save a high score.
 
 ## How to use this template
 This is the template for a project where front-end and back-end are separated.
