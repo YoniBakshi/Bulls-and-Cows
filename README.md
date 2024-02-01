@@ -4,7 +4,7 @@
 * Yoni Bakshi:  yehonatanba@edu.hac.ac.il:
 
 ## Explanations
-Game: Bulls and Cows
+# Game: Bulls and Cows
 The project is a guessing game web application where the user tries to guess a randomly generated number.
 The user can submit their guess and receive feedback if the guess is too high or too low.
 The user can also choose to start a new game at any time.
